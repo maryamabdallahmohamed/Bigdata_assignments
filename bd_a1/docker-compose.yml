@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  mental_health:
+    build: .
+    volumes:
+      - ./notebooks:/home/doc-bd-a1  
+    working_dir: /home/doc-bd-a1
+    command: /bin/bash
