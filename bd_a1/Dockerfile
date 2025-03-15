@@ -1,15 +1,34 @@
 FROM ubuntu:latest
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip python3-venv && \
-    python3 -m venv /venv
 
-ENV PATH="/venv/bin:$PATH"
-RUN pip install pandas numpy seaborn matplotlib scikit-learn scipy
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /home/doc-bd-a1/
+# Create and activate virtual environment
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY mental_health_analysis.csv /home/doc-bd-a1/
+# Now install Python packages in the virtual environment
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    pandas \
+    numpy \
+    seaborn \
+    matplotlib \
+    scikit-learn \
+    scipy
 
-WORKDIR /home/doc-bd-a1/
+# Create directory and copy data
+RUN mkdir -p /home/doc-bd-a1
+COPY Sleep_health_and_lifestyle_dataset.csv /home/doc-bd-a1/
 
 CMD ["/bin/bash"]
+
+
+
