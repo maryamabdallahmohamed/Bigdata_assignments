@@ -2,15 +2,12 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler,OneHotEncoder
-from load import load_dataset
-from sklearn.model_selection import train_test_split
+import load
+import sys
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score,f1_score
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# Load the dataset
-df = load_dataset('Sleep_health_and_lifestyle_dataset.csv')
+dataset_path = sys.argv[1]
+df=load.load_dataset(dataset_path)
 df['Sleep Disorder'] = df['Sleep Disorder'].map({'Sleep Apnea': 0, 'Insomnia': 1})
 df.drop('Person ID', axis=1, inplace=True)
 df[['Systolic', 'Diastolic']] = df['Blood Pressure'].str.split('/', expand=True).astype(int)
@@ -20,9 +17,10 @@ df = df[df['Occupation'] != 'Manager']
 
 clean_df = df.copy()
 clean_df.dropna(inplace=True)
-clean_df.reset_index(drop=True, inplace=True)
+clean_df.reset_index(drop=True,inplace=True)
 clean_df.drop(['BMI Category', 'Stress Level'], axis=1, inplace=True)
 
+print(clean_df.info())
 
 
 # One-hot encode categorical columns
@@ -38,10 +36,6 @@ encoded_df.index = clean_df.index
 clean_df = clean_df.drop(columns=cat_cols, axis=1)
 clean_df = pd.concat([clean_df, encoded_df], axis=1)
 
-corr_with_sleep_disorder = clean_df.corr()['Sleep Disorder'].sort_values(ascending=False)
-sns.heatmap(corr_with_sleep_disorder.to_frame(), annot=True, cmap='coolwarm', vmin=-1, vmax=1, cbar_kws={'label': 'Correlation'})
-plt.title('Correlation with Sleep Disorder')
-plt.savefig('vis.png', dpi=300, bbox_inches='tight')
 
 
 
@@ -90,28 +84,6 @@ predictions = model.predict(features_scaled)
 
 impute_df["predicted_sleep_disorder"] = impute_df["Sleep Disorder"].copy()
 impute_df["predicted_sleep_disorder"].fillna(pd.Series(predictions, index=impute_df.index), inplace=True)
-
-
-
-# Insight 1: Percentage of individuals with Sleep Disorders
-sleep_disorder_pct = impute_df['Sleep Disorder'].value_counts(normalize=True) * 100
-insight_1 = f"Percentage of individuals with Sleep Disorders after Imputation: Sleep Apnea = {sleep_disorder_pct[0]:.2f}%, Insomnia = {sleep_disorder_pct[1]:.2f}%"
-with open('eda-in-1.txt', 'w') as f:
-    f.write(insight_1)
-
-# Insight 2: Average Sleep Duration by Gender
-avg_sleep_by_gender = df.groupby('Gender')['Sleep Duration'].mean()
-insight_2 = f"Average Sleep Duration by Gender: Female = {avg_sleep_by_gender['Female']:.2f} hours, Male = {avg_sleep_by_gender['Male']:.2f} hours"
-with open('eda-in-2.txt', 'w') as f:
-    f.write(insight_2)
-
-# Insight 3: Most common Occupation among those with Sleep Disorders
-disorder_df = df[df['Sleep Disorder'].notna()]
-top_occupation = disorder_df['Occupation'].value_counts().idxmax()
-top_occupation_count = disorder_df['Occupation'].value_counts().max()
-insight_3 = f"Most common Occupation among those with Sleep Disorders: {top_occupation} (Count = {top_occupation_count})"
-with open('eda-in-3.txt', 'w') as f:
-    f.write(insight_3)
-
-
+impute_df.drop( 'Sleep Disorder',axis=1,inplace=True)
 impute_df.to_csv('res_dpre.csv')
+print(impute_df.info())
