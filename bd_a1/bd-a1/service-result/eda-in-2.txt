@@ -1,0 +1,1 @@
+Average Sleep Duration by Gender: Female = 7.23 hours, Male = 7.04 hours
