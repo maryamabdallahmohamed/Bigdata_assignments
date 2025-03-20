@@ -18,6 +18,8 @@ RUN pip install --upgrade pip
 RUN pip install pandas numpy seaborn matplotlib scikit-learn
 
 RUN mkdir -p /home/doc-bd-a1
+WORKDIR /home/doc-bd-a1
+COPY . .
 COPY Sleep_health_and_lifestyle_dataset.csv /home/doc-bd-a1/
 
 CMD ["/bin/bash"]

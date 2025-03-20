@@ -1,0 +1,1 @@
+Percentage of individuals with Sleep Disorders after Imputation: Sleep Apnea = 50.32%, Insomnia = 49.68%

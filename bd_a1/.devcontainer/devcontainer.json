@@ -4,7 +4,6 @@
 		"context": "..",
 		"dockerfile": "../Dockerfile"
 	},
-
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -14,7 +13,5 @@
 			]
 		}
 	},
-
-	"workspaceMount": "source=${localWorkspaceFolder},target=/home/doc-bd-a1,type=bind",
 	"workspaceFolder": "/home/doc-bd-a1"
 }
